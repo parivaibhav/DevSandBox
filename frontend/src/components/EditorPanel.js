@@ -2,14 +2,18 @@ import Editor from '@monaco-editor/react';
 import { VscRunAll } from "react-icons/vsc";
 import { IoIosSave } from "react-icons/io";
 import { HiOutlineFolderDownload } from "react-icons/hi";
+import { useTheme } from '../contexts/ThemeContext'; // ✅ adjust the path to your context file
 
 export default function EditorPanel({
   html, css, js, setHtml, setCss, setJs,
-  theme, filename, setFilename,
+  filename, setFilename,
   includeJQuery, setIncludeJQuery,
   includeBootstrap, setIncludeBootstrap,
   runCode, saveFile, downloadZip
 }) {
+  const { theme } = useTheme(); // ✅ Get theme from context
+  const monacoTheme = theme === 'dark' ? 'vs-dark' : 'light'; // Convert to Monaco-compatible theme
+
   return (
     <div className="space-y-6">
       {/* Filename input + checkboxes */}
@@ -20,10 +24,13 @@ export default function EditorPanel({
           value={filename}
           onChange={(e) => setFilename(e.target.value)}
           placeholder="Name to save into zip"
-          className="border px-3 py-2 rounded text-sm text-black w-full sm:w-auto"
+          className="border px-3 py-2 rounded text-sm w-full sm:w-auto
+            text-black dark:text-white
+            bg-white dark:bg-gray-800
+            border-gray-300 dark:border-gray-700"
         />
 
-        {/* Modern checkbox pills */}
+        {/* jQuery & Bootstrap checkboxes */}
         <div className="flex gap-3 flex-wrap">
           {/* jQuery */}
           <label className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-all text-sm font-medium
@@ -55,12 +62,18 @@ export default function EditorPanel({
 
       {/* Code Editors */}
       {['HTML', 'CSS', 'JavaScript'].map((lang, i) => (
-        <div key={lang} className="rounded-lg shadow border border-gray-200 overflow-hidden">
-          <div className="bg-gray-100 px-3 py-2 font-medium text-sm text-gray-700">{lang}</div>
+        <div key={lang} className="rounded-lg shadow border overflow-hidden
+          border-gray-200 dark:border-gray-700">
+          <div className="px-3 py-2 font-medium text-sm
+            bg-gray-100 dark:bg-gray-800
+            text-gray-700 dark:text-gray-200">
+            {lang}
+          </div>
           <Editor
+            key={monacoTheme} // force refresh theme
             height="150px"
             defaultLanguage={lang.toLowerCase()}
-            theme={theme}
+            theme={monacoTheme}
             value={i === 0 ? html : i === 1 ? css : js}
             onChange={(v) => {
               if (v === null) return;
