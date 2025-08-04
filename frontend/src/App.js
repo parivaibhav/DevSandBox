@@ -135,7 +135,9 @@ export default function App() {
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-500 ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       <header className={`w-full border-b px-4 py-3 shadow-sm ${theme === 'dark' ? 'bg-gray-900 text-white border-gray-700' : 'bg-white text-black border-gray-200'}`}>
+        {/* Top Bar */}
         <div className="flex justify-between items-center">
+          {/* Left: Logo + Mobile Menu */}
           <div className="flex items-center gap-3">
             <button onClick={toggleMenu} className="sm:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
               {menuOpen ? <IoCloseOutline size={20} /> : <HiOutlineBars2 size={20} />}
@@ -144,42 +146,100 @@ export default function App() {
               <FaTerminal className="w-5 h-5" /> <span>DevSandBox</span>
             </h1>
           </div>
+
+          {/* Right: Desktop Buttons */}
           <div className="hidden sm:flex items-center gap-3">
+            {/* Theme toggle */}
             <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-              {theme === 'dark' ? <TbSunFilled className="w-5 h-5 text-yellow-400" /> : <PiMoonStarsFill className="w-5 h-5 text-gray-800" />}
+              {theme === 'dark'
+                ? <TbSunFilled className="w-5 h-5 text-yellow-400" />
+                : <PiMoonStarsFill className="w-5 h-5 text-gray-800" />}
             </button>
-            <select value={selectedExample} onChange={(e) => {
-              const ex = e.target.value;
-              setSelectedExample(ex);
-              setCode(prev => ({ ...prev, ...examples[ex] }));
-              setSrcDoc('');
-            }} className="px-2 py-1 rounded-md text-sm border dark:border-gray-600 bg-white text-black dark:bg-gray-800 dark:text-white">
+
+            {/* Example selector */}
+            <select
+              value={selectedExample}
+              onChange={(e) => {
+                const ex = e.target.value;
+                setSelectedExample(ex);
+                setCode(prev => ({ ...prev, ...examples[ex] }));
+                setSrcDoc('');
+              }}
+              className="px-2 py-1 rounded-md text-sm border dark:border-gray-600 bg-white text-black dark:bg-gray-800 dark:text-white"
+            >
               {Object.keys(examples).map(key => <option key={key}>{key}</option>)}
             </select>
+
+            {/* Reset */}
             <button onClick={resetEditor} className="text-sm px-3 py-1 rounded-md bg-blue-600 text-white">Reset</button>
-            {!token ? <GoogleLoginButton setToken={setToken} /> : <button onClick={() => { localStorage.removeItem('token'); setToken(''); }} className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md">Logout</button>}
+
+            {/* Auth Button */}
+            {!token
+              ? <GoogleLoginButton setToken={setToken} />
+              : (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    setToken('');
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
+                >
+                  Logout
+                </button>
+              )}
           </div>
+
+          {/* Right: Mobile Theme Button */}
           <div className="sm:hidden">
             <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-              {theme === 'dark' ? <TbSunFilled className="w-5 h-5 text-yellow-400" /> : <PiMoonStarsFill className="w-5 h-5 text-gray-800" />}
+              {theme === 'dark'
+                ? <TbSunFilled className="w-5 h-5 text-yellow-400" />
+                : <PiMoonStarsFill className="w-5 h-5 text-gray-800" />}
             </button>
           </div>
         </div>
-        {menuOpen && token && (
+
+        {/* Mobile Dropdown Menu */}
+        {menuOpen && (
           <div className="sm:hidden mt-3 space-y-3">
-            <select value={selectedExample} onChange={(e) => {
-              const ex = e.target.value;
-              setSelectedExample(ex);
-              setCode(prev => ({ ...prev, ...examples[ex] }));
-              setSrcDoc('');
-            }} className="w-full px-2 py-1 rounded-md text-sm border dark:border-gray-600 bg-white text-black dark:bg-gray-800 dark:text-white">
+            {/* Example Selector */}
+            <select
+              value={selectedExample}
+              onChange={(e) => {
+                const ex = e.target.value;
+                setSelectedExample(ex);
+                setCode(prev => ({ ...prev, ...examples[ex] }));
+                setSrcDoc('');
+              }}
+              className="w-full px-2 py-1 rounded-md text-sm border dark:border-gray-600 bg-white text-black dark:bg-gray-800 dark:text-white"
+            >
               {Object.keys(examples).map(key => <option key={key}>{key}</option>)}
             </select>
+
+            {/* Reset button (always visible) */}
             <button onClick={resetEditor} className="w-full text-sm px-3 py-1 rounded-md bg-blue-600 text-white">Reset</button>
-            <button onClick={() => { localStorage.removeItem('token'); setToken(''); }} className="w-full bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md">Logout</button>
-            <div className="max-h-60 overflow-y-auto border-t pt-2 mt-2 dark:border-gray-700">
-              <FileExplorer token={token} onLoadFile={setCode} ref={fileExplorerRef} />
-            </div>
+
+            {/* Auth Buttons */}
+            {!token
+              ? <GoogleLoginButton setToken={setToken} />
+              : (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    setToken('');
+                  }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
+                >
+                  Logout
+                </button>
+              )}
+
+            {/* File Explorer (only if logged in) */}
+            {token && (
+              <div className="max-h-60 overflow-y-auto border-t pt-2 mt-2 dark:border-gray-700">
+                <FileExplorer token={token} onLoadFile={setCode} ref={fileExplorerRef} />
+              </div>
+            )}
           </div>
         )}
       </header>
@@ -208,21 +268,43 @@ export default function App() {
             />
             <div>
               <PreviewFrame srcDoc={srcDoc} previewInNewTab={previewInNewTab} />
-              <div className="bg-black text-white rounded-lg p-3 mt-4 max-h-60 overflow-y-auto font-mono text-sm">
-                <div className="flex justify-between mb-2">
-                  <strong>Console</strong>
-                  <button onClick={() => setConsoleLogs([])} className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600">Clear</button>
+              <div className="bg-black text-white rounded-lg mt-4 h-60 overflow-y-auto font-mono text-sm relative border border-gray-700 shadow-inner px-4 ">
+                {/* Sticky Header */}
+                <div className="sticky top-0 z-10 bg-black pb-2 mb-2 flex justify-between items-center border-b border-gray-700 py-2">
+                  <strong className="text-white">🖥️ Console</strong>
+                  <button
+                    onClick={() => setConsoleLogs([])}
+                    className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded transition"
+                  >
+                    Clear
+                  </button>
                 </div>
+
+                {/* Console Content */}
                 {consoleLogs.length === 0 ? (
-                  <div className="text-gray-400">No output</div>
+                  <div className="text-gray-500 italic">No output</div>
                 ) : (
                   consoleLogs.map((log, idx) => (
-                    <div key={idx} className={log.type === 'log' ? 'text-gray-200' : log.type === 'warn' ? 'text-yellow-400' : 'text-red-400'}>
-                      {log.args.map((arg, i) => <span key={i}>{JSON.stringify(arg)} </span>)}
+                    <div
+                      key={idx}
+                      className={
+                        log.type === 'log'
+                          ? 'text-gray-300'
+                          : log.type === 'warn'
+                            ? 'text-yellow-400'
+                            : 'text-red-400'
+                      }
+                    >
+                      {log.args.map((arg, i) => (
+                        <span key={i}>{typeof arg === 'string' ? arg : JSON.stringify(arg)} </span>
+                      ))}
                     </div>
                   ))
                 )}
               </div>
+
+
+
             </div>
           </div>
         </div>
