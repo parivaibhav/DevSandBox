@@ -8,8 +8,8 @@ const fileRoutes = require('./routes/fileRoutes');
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
+  origin: 'https://devsandbox-sigma.vercel.app',
+  credentials: true
 }));
 app.use(express.json());
 
